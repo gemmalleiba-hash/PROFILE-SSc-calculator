@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de progresión de EPI — PROFILE-SSc / REMSCLE</title>
+<style>
+  :root {
+    --navy: #1F3864;
+    --accent: #2E74B5;
+    --mint: #02C39A;
+    --light: #EAF1F8;
+    --grey: #595959;
+    --danger-bg: #FCEBEB;
+    --danger-text: #A32D2D;
+    --success-bg: #EAF3DE;
+    --success-text: #3B6D11;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Calibri, Arial, sans-serif;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    color: #1a1a1a;
+    background: #fff;
+    line-height: 1.5;
+  }
+  header {
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+  .kicker {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+  h1 {
+    color: var(--navy);
+    font-size: 26px;
+    margin: 0 0 6px;
+  }
+  .subtitle {
+    color: var(--grey);
+    font-size: 14px;
+    font-style: italic;
+    margin: 0;
+  }
+  h2 {
+    color: var(--navy);
+    font-size: 16px;
+    margin: 2rem 0 0.75rem;
+  }
+  h3 {
+    color: var(--navy);
+    font-size: 14px;
+    margin: 0 0 0.5rem;
+  }
+  .section-note {
+    font-size: 12.5px;
+    color: var(--grey);
+    margin: -6px 0 0.9rem;
+  }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .meas-col {
+    background: #f7f9fc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+  }
+  .meas-col .meas-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--grey);
+    margin-bottom: 4px;
+  }
+  input[type=number] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fafafa;
+  }
+  .meas-col input[type=number] {
+    margin-bottom: 8px;
+  }
+  input[type=number]:focus {
+    outline: 2px solid var(--accent);
+    border-color: var(--accent);
+  }
+  .checks {
+    display: flex;
+    gap: 24px;
+    margin: 1rem 0 1.5rem;
+    flex-wrap: wrap;
+  }
+  .checks label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #1a1a1a;
+    cursor: pointer;
+  }
+  .checks input { width: 18px; height: 18px; }
+  .results {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  .results3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .stat {
+    background: var(--light);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .stat p:first-child {
+    font-size: 12.5px;
+    color: var(--grey);
+    margin: 0 0 4px;
+  }
+  .stat p:last-child {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+  }
+  .stat.warn p:last-child { color: var(--danger-text); }
+  .criteria-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--light);
+    margin-bottom: 8px;
+    font-size: 14.5px;
+  }
+  .badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .badge.pass { background: var(--danger-bg); color: var(--danger-text); }
+  .badge.fail { background: var(--success-bg); color: var(--success-text); }
+  .note {
+    font-size: 12.5px;
+    color: var(--grey);
+    margin-top: 2rem;
+    border-top: 1px solid #e5e5e5;
+    padding-top: 1rem;
+  }
+  @media (max-width: 600px) {
+    .grid2, .results { grid-template-columns: 1fr 1fr; }
+    .grid3, .results3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="kicker">Herramienta de apoyo · Fase 1</p>
+  <h1>Calculadora de progresión de EPI</h1>
+  <p class="subtitle">PROFILE-SSc · Registro REMSCLE — evaluación automática de los cinco criterios de progresión comparados en el estudio</p>
+</header>
+
+<h2>Valores de FVC y DLco (Goh, INBUILD, INBUILD adaptado, ATS)</h2>
+<div class="grid2">
+  <div>
+    <label for="fvcB">FVC basal (%)</label>
+    <input type="number" id="fvcB" min="0" max="150" step="0.1" placeholder="Ej. 80">
+  </div>
+  <div>
+    <label for="fvcS">FVC seguimiento (%)</label>
+    <input type="number" id="fvcS" min="0" max="150" step="0.1" placeholder="Ej. 72">
+  </div>
+  <div>
+    <label for="dlcoB">DLco basal (%)</label>
+    <input type="number" id="dlcoB" min="0" max="150" step="0.1" placeholder="Ej. 60">
+  </div>
+  <div>
+    <label for="dlcoS">DLco seguimiento (%)</label>
+    <input type="number" id="dlcoS" min="0" max="150" step="0.1" placeholder="Ej. 55">
+  </div>
+</div>
+
+<div class="checks">
+  <label><input type="checkbox" id="clin"> Progresión clínica (síntomas)</label>
+  <label><input type="checkbox" id="hrct"> Progresión radiológica en TCAR</label>
+</div>
+
+<div class="results">
+  <div class="stat"><p>&Delta; absoluto FVC</p><p id="oAbsFVC">–</p></div>
+  <div class="stat"><p>&Delta; relativo FVC</p><p id="oRelFVC">–</p></div>
+  <div class="stat"><p>&Delta; absoluto DLco</p><p id="oAbsDLco">–</p></div>
+  <div class="stat"><p>&Delta; relativo DLco</p><p id="oRelDLco">–</p></div>
+</div>
+
+<h2>RELIEF (2021) — mediciones espirométricas seriadas</h2>
+<p class="section-note">Descenso absoluto de FVC ≥ 5% por año, confirmado por al menos 3 determinaciones espirométricas dentro de una ventana de 6-24 meses previa a la inclusión.</p>
+
+<div class="grid3">
+  <div class="meas-col">
+    <p class="meas-label">Medición 1 (basal)</p>
+    <label for="relM1">Mes (desde basal)</label>
+    <input type="number" id="relM1" min="0" step="1" placeholder="0">
+    <label for="relV1">FVC (%)</label>
+    <input type="number" id="relV1" min="0" max="150" step="0.1" placeholder="Ej. 80">
+  </div>
+  <div class="meas-col">
+    <p class="meas-label">Medición 2</p>
+    <label for="relM2">Mes (desde basal)</label>
+    <input type="number" id="relM2" min="0" step="1" placeholder="Ej. 9">
+    <label for="relV2">FVC (%)</label>
+    <input type="number" id="relV2" min="0" max="150" step="0.1" placeholder="Ej. 76">
+  </div>
+  <div class="meas-col">
+    <p class="meas-label">Medición 3</p>
+    <label for="relM3">Mes (desde basal)</label>
+    <input type="number" id="relM3" min="0" step="1" placeholder="Ej. 18">
+    <label for="relV3">FVC (%)</label>
+    <input type="number" id="relV3" min="0" max="150" step="0.1" placeholder="Ej. 71">
+  </div>
+</div>
+
+<div class="results3">
+  <div class="stat"><p>Ventana (mes 1 → mes 3)</p><p id="oIntervalRelief">–</p></div>
+  <div class="stat"><p>&Delta; absoluto FVC (1→3)</p><p id="oAbsRelief">–</p></div>
+  <div class="stat" id="oAnnualReliefCard"><p>Descenso anualizado</p><p id="oAnnualRelief">–</p></div>
+</div>
+
+<h2>Criterios de progresión cumplidos</h2>
+<div id="criteria"></div>
+
+<p class="note">
+  <strong>Notas de uso:</strong> el descenso absoluto es la resta directa entre el valor basal y el de seguimiento (en puntos porcentuales); el relativo expresa ese mismo descenso como porcentaje del valor basal. El criterio INBUILD original requiere un intervalo de 24 meses entre las dos determinaciones; su versión adaptada aplica la misma regla sobre un intervalo de 12 meses — verifique que introduce el par de valores correspondiente al intervalo correcto antes de interpretar el resultado.<br><br>
+  <strong>RELIEF (2021):</strong> a diferencia de los demás criterios, no se define sobre un intervalo fijo sino sobre una ventana de 6-24 meses confirmada por ≥3 determinaciones de FVC. El descenso anualizado se calcula como (FVC medición 1 − FVC medición 3) × 12 / (mes 3 − mes 1). El criterio se marca como "Cumple" solo si, además de alcanzar ≥5 pts/año, la ventana temporal entre la primera y la tercera medición está dentro de 6-24 meses y se han introducido las 3 mediciones.<br><br>
+  Esta calculadora es una herramienta de apoyo para la extracción de datos del CRD; no sustituye la evaluación clínica del caso.
+</p>
+
+<p class="note" style="margin-top:1rem; border-top:0; padding-top:0; text-align:right; font-size:12px;">© GemaM_Lledó_Ibáñez · PROFILE-SSc</p>
+
+<script>
+const crit = [
+  {name: 'Goh (12 meses)'},
+  {name: 'INBUILD (24 meses)'},
+  {name: 'INBUILD adaptado (12 meses)'},
+  {name: 'RELIEF (2021)'},
+  {name: 'ATS (12 meses)'},
+];
+
+const wrap = document.getElementById('criteria');
+crit.forEach((c, i) => {
+  const row = document.createElement('div');
+  row.className = 'criteria-row';
+  row.innerHTML = '<span>' + c.name + '</span><span class="badge" id="badge' + i + '"></span>';
+  wrap.appendChild(row);
+});
+
+function setBadge(i, pass, ready = true) {
+  const b = document.getElementById('badge' + i);
+  if (!ready) {
+    b.textContent = 'Pendiente';
+    b.className = 'badge';
+    b.style.background = '#F2F2F2';
+    b.style.color = '#666';
+    return;
+  }
+  b.removeAttribute('style');
+  b.textContent = pass ? 'Cumple' : 'No cumple';
+  b.className = 'badge ' + (pass ? 'pass' : 'fail');
+}
+
+function calc() {
+  const raw = id => document.getElementById(id).value.trim();
+  const num = id => raw(id) === '' ? null : parseFloat(raw(id));
+
+  const fvcB = num('fvcB');
+  const fvcS = num('fvcS');
+  const dlcoB = num('dlcoB');
+  const dlcoS = num('dlcoS');
+  const clin = document.getElementById('clin').checked;
+  const hrct = document.getElementById('hrct').checked;
+
+  const mainComplete = [fvcB, fvcS, dlcoB, dlcoS].every(v => Number.isFinite(v));
+  const absFVC = mainComplete ? fvcB - fvcS : null;
+  const relFVC = mainComplete && fvcB !== 0 ? (absFVC / fvcB * 100) : null;
+  const absDLco = mainComplete ? dlcoB - dlcoS : null;
+  const relDLco = mainComplete && dlcoB !== 0 ? (absDLco / dlcoB * 100) : null;
+
+  document.getElementById('oAbsFVC').textContent = absFVC === null ? '–' : absFVC.toFixed(1) + ' pts';
+  document.getElementById('oRelFVC').textContent = relFVC === null ? '–' : relFVC.toFixed(1) + '%';
+  document.getElementById('oAbsDLco').textContent = absDLco === null ? '–' : absDLco.toFixed(1) + ' pts';
+  document.getElementById('oRelDLco').textContent = relDLco === null ? '–' : relDLco.toFixed(1) + '%';
+
+  const goh = mainComplete && (relFVC >= 10 || (relFVC >= 5 && relFVC < 10 && relDLco >= 15));
+  const inbuild = mainComplete && (relFVC >= 10 || (relFVC >= 5 && relFVC < 10 && clin) || (relFVC >= 5 && relFVC < 10 && hrct) || (clin && hrct));
+  const atsCount = mainComplete ? (clin ? 1 : 0) + ((absFVC >= 5 || absDLco >= 10) ? 1 : 0) + (hrct ? 1 : 0) : 0;
+  const ats = mainComplete && atsCount >= 2;
+
+  // RELIEF (2021): descenso absoluto de FVC >= 5%/año, confirmado por >=3 mediciones
+  // dentro de una ventana de 6-24 meses previa a la inclusión.
+  const relM1 = num('relM1');
+  const relV1 = num('relV1');
+  const relM2 = num('relM2');
+  const relV2 = num('relV2');
+  const relM3 = num('relM3');
+  const relV3 = num('relV3');
+
+  const reliefComplete = [relM1, relV1, relM2, relV2, relM3, relV3].every(v => Number.isFinite(v));
+  const interval = reliefComplete ? relM3 - relM1 : null;
+  const absReliefDecline = reliefComplete ? relV1 - relV3 : null;
+  const annualDecline = reliefComplete && interval > 0 ? (absReliefDecline * 12 / interval) : null;
+  const windowValid = reliefComplete && interval >= 6 && interval <= 24;
+  const middleWithinWindow = reliefComplete && relM2 > relM1 && relM2 < relM3;
+  const threeMeasurementsEntered = reliefComplete && relV1 > 0 && relV2 > 0 && relV3 > 0;
+  const relief = reliefComplete && windowValid && middleWithinWindow && threeMeasurementsEntered && annualDecline >= 5;
+
+  document.getElementById('oIntervalRelief').textContent = interval === null ? '–' : interval.toFixed(0) + ' meses';
+  document.getElementById('oAbsRelief').textContent = absReliefDecline === null ? '–' : absReliefDecline.toFixed(1) + ' pts';
+  document.getElementById('oAnnualRelief').textContent = annualDecline === null ? '–' : annualDecline.toFixed(1) + ' pts/año';
+
+  const intervalCard = document.getElementById('oIntervalRelief').closest('.stat');
+  intervalCard.classList.toggle('warn', reliefComplete && (!windowValid || !middleWithinWindow));
+  document.getElementById('oAnnualReliefCard').classList.toggle('warn', reliefComplete && annualDecline >= 5 && !relief);
+
+  setBadge(0, goh, mainComplete);
+  setBadge(1, inbuild, mainComplete);
+  setBadge(2, inbuild, mainComplete);
+  setBadge(3, relief, reliefComplete);
+  setBadge(4, ats, mainComplete);
+}
+
+['fvcB','fvcS','dlcoB','dlcoS','clin','hrct','relM1','relV1','relM2','relV2','relM3','relV3'].forEach(id =>
+  document.getElementById(id).addEventListener('input', calc)
+);
+calc();
+</script>
+
+</body>
+</html>
